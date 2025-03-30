@@ -1,0 +1,55 @@
+import pandas as pd
+import numpy as np
+
+# Verifica e installazione di scikit-learn
+try:
+    from sklearn.model_selection import train_test_split
+    from sklearn.linear_model import LogisticRegression
+    from sklearn.metrics import accuracy_score
+except ImportError:
+    print("Errore: la libreria 'scikit-learn' non è installata. Esegui il seguente comando per installarla:")
+    print("pip install scikit-learn")
+    exit(1)
+
+
+def calcolo_probabilita_statistica(vittorie, pareggi, sconfitte):
+    totale_partite = vittorie + pareggi + sconfitte
+    if totale_partite == 0:
+        return 0
+    probabilita_vittoria = vittorie / totale_partite
+    return probabilita_vittoria
+
+
+def modello_predittivo(data):
+    X = data[['Vittorie', 'Pareggi', 'Sconfitte', 'Gol_Fatti', 'Gol_Subiti']]
+    y = data['Risultato']
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    modello = LogisticRegression()
+    modello.fit(X_train, y_train)
+    predizioni = modello.predict(X_test)
+    precisione = accuracy_score(y_test, predizioni)
+    print(f'Accuratezza del modello: {precisione * 100:.2f}%')
+
+    return modello
+
+
+# Esempio di utilizzo
+vittorie = 15
+pareggi = 5
+sconfitte = 10
+
+probabilita = calcolo_probabilita_statistica(vittorie, pareggi, sconfitte)
+print(f'Probabilità statistica di vittoria: {probabilita * 100:.2f}%')
+
+# Caricamento dati per il modello avanzato
+dati_partite = pd.DataFrame({
+    'Vittorie': [15, 10, 20, 8],
+    'Pareggi': [5, 8, 5, 10],
+    'Sconfitte': [10, 12, 5, 7],
+    'Gol_Fatti': [40, 35, 60, 25],
+    'Gol_Subiti': [30, 45, 20, 30],
+    'Risultato': [1, 0, 1, 0]  # 1 per vittoria, 0 per sconfitta
+})
+
+modello = modello_predittivo(dati_partite)
